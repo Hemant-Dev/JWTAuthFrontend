@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import ValidateForm from 'src/app/Helpers/validateform';
-import { Response } from 'src/app/Models/response';
 import { AuthService } from 'src/app/Services/auth.service';
 
 @Component({
@@ -42,7 +41,7 @@ export class LoginComponent implements OnInit {
       this.auth.login(this.loginForm.value).subscribe({
         next: (res: any) => {
           // const response = res as Response;
-          alert(JSON.stringify(res.message));
+          alert('Message: ' + res.message + ' Token: ' + res.token);
           this.loginForm.reset();
           this.router.navigate(['dashboard']);
         },
