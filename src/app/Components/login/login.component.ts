@@ -42,6 +42,7 @@ export class LoginComponent implements OnInit {
         next: (res: any) => {
           // const response = res as Response;
           alert('Message: ' + res.message + ' Token: ' + res.token);
+          this.auth.storeToken(res.token);
           this.loginForm.reset();
           this.router.navigate(['dashboard']);
         },
