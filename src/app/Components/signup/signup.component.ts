@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import ValidateForm from 'src/app/Helpers/validateform';
+import { Response } from 'src/app/Models/response';
 import { AuthService } from 'src/app/Services/auth.service';
 
 @Component({
@@ -15,13 +17,17 @@ export class SignupComponent implements OnInit {
 
   signupForm!: FormGroup;
 
-  constructor(private fb: FormBuilder, private auth: AuthService) {}
+  constructor(
+    private fb: FormBuilder,
+    private auth: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.signupForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      email: ['', Validators.required, Validators.email],
+      email: ['', Validators.required],
       username: ['', Validators.required],
       password: ['', Validators.required],
     });
@@ -40,10 +46,12 @@ export class SignupComponent implements OnInit {
       // console.log(this.signupForm.value);
       this.auth.signUp(this.signupForm.value).subscribe({
         next: (res) => {
-          alert(res);
-          console.log(res);
+          const response = res as Response;
+          alert(response.message);
+          this.signupForm.reset();
+          this.router.navigate(['login']);
         },
-        error: (err) => alert(err),
+        error: (err) => alert(err.error.message),
       });
     } else {
       console.log('Form is Invalid');
