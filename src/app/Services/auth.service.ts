@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private _http: HttpClient) {}
+  constructor(private _http: HttpClient, private router: Router) {}
 
   baseURL: string = 'https://localhost:7115/api/Users';
 
@@ -15,7 +16,11 @@ export class AuthService {
   login(loginObj: any) {
     return this._http.post(this.baseURL + `/authenticate`, loginObj);
   }
-
+  signout() {
+    localStorage.clear();
+    this;
+    this.router.navigate(['login']);
+  }
   storeToken(tokenValue: string) {
     localStorage.setItem('token', tokenValue);
   }
