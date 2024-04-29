@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { NgToastService } from 'ng-angular-popup';
 import ValidateForm from 'src/app/Helpers/validateform';
 import { AuthService } from 'src/app/Services/auth.service';
+import { UserStoreService } from 'src/app/Services/user-store.service';
 
 @Component({
   selector: 'app-login',
@@ -21,7 +22,8 @@ export class LoginComponent implements OnInit {
     private fb: FormBuilder,
     private auth: AuthService,
     private router: Router,
-    private toast: NgToastService
+    private toast: NgToastService,
+    private userStore: UserStoreService
   ) {}
   ngOnInit(): void {
     this.loginForm = this.fb.group({
@@ -39,18 +41,22 @@ export class LoginComponent implements OnInit {
 
   onLogin() {
     if (this.loginForm.valid) {
-      console.log(this.loginForm.value);
+      // console.log(this.loginForm.value);
       this.auth.login(this.loginForm.value).subscribe({
         next: (res: any) => {
+          this.loginForm.reset();
+          this.auth.storeToken(res.token);
+          const tokenPayload = this.auth.decodedToken();
+          this.userStore.setFullNameToStore(tokenPayload.unique_name);
+          this.userStore.setRoleToStore(tokenPayload.role);
+          console.log();
+          console.log(this.userStore.getRoleFromStore());
+          this.router.navigate(['dashboard']);
           this.toast.success({
             detail: 'Success',
             summary: res.message,
             duration: 3000,
           });
-
-          this.auth.storeToken(res.token);
-          this.loginForm.reset();
-          this.router.navigate(['dashboard']);
         },
         error: (err) =>
           this.toast.error({
