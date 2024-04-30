@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { NgToastService } from 'ng-angular-popup';
 import ValidateForm from 'src/app/Helpers/validateform';
 import { AuthService } from 'src/app/Services/auth.service';
+import { ResetPasswordService } from 'src/app/Services/reset-password.service';
 import { UserStoreService } from 'src/app/Services/user-store.service';
 
 @Component({
@@ -29,7 +30,8 @@ export class LoginComponent implements OnInit {
     private auth: AuthService,
     private router: Router,
     private toast: NgToastService,
-    private userStore: UserStoreService
+    private userStore: UserStoreService,
+    private resetService: ResetPasswordService
   ) {}
   ngOnInit(): void {
     this.loginForm = this.fb.group({
@@ -86,10 +88,29 @@ export class LoginComponent implements OnInit {
   confirmToSend() {
     if (this.checkValidEmail(this.resetPasswordEmail)) {
       console.log(this.resetPasswordEmail);
-      this.resetPasswordEmail = '';
-      const buttonRef = document.getElementById('closeBtn');
-      buttonRef?.click();
+
       // API Call
+      this.resetService
+        .sendResetPasswordLink(this.resetPasswordEmail)
+        .subscribe({
+          next: (res) => {
+            this.toast.success({
+              detail: 'Success',
+              summary: 'Reset Link sent Successfully!',
+              duration: 3000,
+            });
+            this.resetPasswordEmail = '';
+            const buttonRef = document.getElementById('closeBtn');
+            buttonRef?.click();
+          },
+          error: (err) => {
+            this.toast.error({
+              detail: 'Error',
+              summary: 'Something went wrong: ' + err.error,
+              duration: 3000,
+            });
+          },
+        });
     } else {
       console.log('Invalid Email');
     }

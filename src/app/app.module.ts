@@ -10,6 +10,7 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { DashboardComponent } from './Components/dashboard/dashboard.component';
 import { NgToastModule } from 'ng-angular-popup';
 import { TokenInterceptor } from './Interceptors/token.interceptor';
+import { ResetPasswordComponent } from './Components/reset-password/reset-password.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { TokenInterceptor } from './Interceptors/token.interceptor';
     LoginComponent,
     SignupComponent,
     DashboardComponent,
+    ResetPasswordComponent,
   ],
   imports: [
     BrowserModule,
