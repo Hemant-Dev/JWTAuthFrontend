@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  Validators,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgToastService } from 'ng-angular-popup';
 import ValidateForm from 'src/app/Helpers/validateform';
@@ -17,7 +22,8 @@ export class LoginComponent implements OnInit {
   eyeIcon: string = 'fa fa-eye-slash';
 
   loginForm!: FormGroup;
-
+  public resetPasswordEmail!: string;
+  public isValidEmail!: boolean;
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
@@ -67,6 +73,25 @@ export class LoginComponent implements OnInit {
     } else {
       console.log('Form is invalid');
       ValidateForm.validateAllFormFields(this.loginForm);
+    }
+  }
+
+  checkValidEmail(event: string) {
+    const value = event;
+    const pattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,3}$/;
+    this.isValidEmail = pattern.test(value);
+    return this.isValidEmail;
+  }
+
+  confirmToSend() {
+    if (this.checkValidEmail(this.resetPasswordEmail)) {
+      console.log(this.resetPasswordEmail);
+      this.resetPasswordEmail = '';
+      const buttonRef = document.getElementById('closeBtn');
+      buttonRef?.click();
+      // API Call
+    } else {
+      console.log('Invalid Email');
     }
   }
 }
