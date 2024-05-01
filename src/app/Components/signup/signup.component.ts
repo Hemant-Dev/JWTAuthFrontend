@@ -58,12 +58,14 @@ export class SignupComponent implements OnInit {
           this.signupForm.reset();
           this.router.navigate(['login']);
         },
-        error: (err) =>
+        error: (err) => {
           this.toast.error({
             detail: 'Error',
-            summary: err.error.message,
+            summary: err.message,
             duration: 3000,
           }),
+            console.log(err);
+        },
       });
     } else {
       console.log('Form is Invalid');
