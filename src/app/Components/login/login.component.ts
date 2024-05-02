@@ -1,5 +1,5 @@
 declare var google: any;
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -33,7 +33,8 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private toast: NgToastService,
     private userStore: UserStoreService,
-    private resetService: ResetPasswordService
+    private resetService: ResetPasswordService,
+    private ngZone: NgZone
   ) {}
   ngOnInit(): void {
     this.loginForm = this.fb.group({
@@ -44,7 +45,8 @@ export class LoginComponent implements OnInit {
       client_id:
         '305979783667-3cq7k7pbggp74drkgdku7m93a83nqv9d.apps.googleusercontent.com',
       callback: (resp: any) => {
-        console.log(resp);
+        // console.log(resp);
+        this.handleGoogleLogin(resp);
       },
       auto_select: false,
       cancel_on_tap_outside: true,
@@ -53,7 +55,7 @@ export class LoginComponent implements OnInit {
       theme: 'filled_blue',
       size: 'large',
       shape: 'rectangle',
-      width: '100%',
+      width: '100',
     });
   }
   hideShowPassword() {
@@ -73,7 +75,7 @@ export class LoginComponent implements OnInit {
           this.auth.storeToken(res.accessToken);
           this.auth.storeRefreshToken(res.refreshToken);
           const tokenPayload = this.auth.decodedToken();
-          this.userStore.setFullNameToStore(tokenPayload.unique_name);
+          this.userStore.setFullNameToStore(tokenPayload.name);
           this.userStore.setRoleToStore(tokenPayload.role);
           this.router.navigate(['dashboard']);
           this.toast.success({
@@ -130,6 +132,42 @@ export class LoginComponent implements OnInit {
         });
     } else {
       console.log('Invalid Email');
+    }
+  }
+  decodeToken(token: string) {
+    return JSON.parse(atob(token.split('.')[1]));
+  }
+  handleGoogleLogin(response: any) {
+    if (response) {
+      //decode
+      // console.log(response);
+      localStorage.clear();
+      localStorage.setItem('token', response.credential);
+      this.auth.googleLogin(response.credential).subscribe({
+        next: (res) => {
+          this.loginForm.reset();
+          this.auth.storeToken(res.accessToken);
+          this.auth.storeRefreshToken(res.refreshToken);
+          const tokenPayload = this.auth.decodedToken();
+          this.userStore.setFullNameToStore(tokenPayload.name);
+          this.userStore.setRoleToStore(tokenPayload.role);
+          this.ngZone.run(() => this.router.navigate(['dashboard']));
+          this.toast.success({
+            detail: 'Success',
+            summary: 'Google Login Successfull.',
+            duration: 3000,
+          });
+        },
+        error: (err) =>
+          this.toast.error({
+            detail: 'Error',
+            summary: err,
+            duration: 3000,
+          }),
+      });
+      //navigate to dashboard
+      // Verify the user
+      // this.ngZone.run(() => this.router.navigate(['dashboard']));
     }
   }
 }

@@ -20,8 +20,15 @@ export class AuthService {
   login(loginObj: any) {
     return this._http.post(this.baseURL + `/authenticate`, loginObj);
   }
+  googleLogin(googleCredentialToken: string) {
+    return this._http.get<any>(
+      this.baseURL +
+        `/google-authenticate?googleCredentialToken=${googleCredentialToken}`
+    );
+  }
   signout() {
     localStorage.clear();
+    sessionStorage.clear();
     this.router.navigate(['login']);
   }
   storeRefreshToken(tokenValue: string) {
@@ -49,7 +56,7 @@ export class AuthService {
 
   getFullNameFromToken() {
     if (this.userPayload) {
-      return this.userPayload.unique_name;
+      return this.userPayload.name;
     }
   }
 

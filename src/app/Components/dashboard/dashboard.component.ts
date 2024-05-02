@@ -21,6 +21,7 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // debugger;
     this.api.getUsers().subscribe((res) => (this.Users = res));
     this.userStore.getFullNameFromStore().subscribe((val) => {
       const fullNameFromToken = this.auth.getFullNameFromToken();
