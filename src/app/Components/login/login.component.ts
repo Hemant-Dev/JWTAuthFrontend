@@ -1,3 +1,4 @@
+declare var google: any;
 import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
@@ -11,6 +12,7 @@ import ValidateForm from 'src/app/Helpers/validateform';
 import { AuthService } from 'src/app/Services/auth.service';
 import { ResetPasswordService } from 'src/app/Services/reset-password.service';
 import { UserStoreService } from 'src/app/Services/user-store.service';
+import { CredentialResponse, PromptMomentNotification } from 'google-one-tap';
 
 @Component({
   selector: 'app-login',
@@ -37,6 +39,21 @@ export class LoginComponent implements OnInit {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required],
+    });
+    google.accounts.id.initialize({
+      client_id:
+        '305979783667-3cq7k7pbggp74drkgdku7m93a83nqv9d.apps.googleusercontent.com',
+      callback: (resp: any) => {
+        console.log(resp);
+      },
+      auto_select: false,
+      cancel_on_tap_outside: true,
+    });
+    google.accounts.id.renderButton(document.getElementById('google'), {
+      theme: 'filled_blue',
+      size: 'large',
+      shape: 'rectangle',
+      width: '100%',
     });
   }
   hideShowPassword() {
